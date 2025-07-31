@@ -2,135 +2,84 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Medication Reminder App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Medication Reminder</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      max-width: 480px;
-      margin: 20px auto;
-      padding: 10px;
-      background-color: #f7f7f7;
-      color: #333;
+      padding: 20px;
+      background-color: #f4f4f4;
     }
     h1 {
       text-align: center;
-      color: #2c3e50;
     }
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
+    input, button {
+      padding: 10px;
+      margin: 5px;
     }
-    input[type="text"],
-    input[type="time"] {
-      width: 100%;
-      padding: 8px;
-      margin-top: 5px;
-      box-sizing: border-box;
-      font-size: 1rem;
-    }
-    button {
+    #reminderList {
       margin-top: 20px;
-      padding: 10px 15px;
-      font-size: 1rem;
-      background-color: #2980b9;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      width: 100%;
-    }
-    button:hover {
-      background-color: #3498db;
-    }
-    ul {
-      list-style-type: none;
-      padding-left: 0;
-      margin-top: 25px;
-    }
-    li {
-      background-color: white;
-      padding: 10px 15px;
-      margin-bottom: 10px;
-      border-radius: 6px;
-      font-size: 1.1rem;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .pill-emoji {
-      font-size: 1.5rem;
-      color: #27ae60;
+      padding-left: 10px;
     }
   </style>
 </head>
 <body>
-  <h1>Medication Reminder</h1>
+  <h1>💊 Medication Reminder</h1>
+  <label for="medName">Medication Name:</label>
+  <input type="text" id="medName" placeholder="e.g., Aspirin" />
+  <label for="medTime">Time:</label>
+  <input type="time" id="medTime" />
+  <button onclick="addReminder()">Add Reminder</button>
 
-  <label for="medication">Medication Name:</label>
-  <input type="text" id="medication" placeholder="e.g., Aspirin" />
-
-  <label for="time">Time to Take:</label>
-  <input type="time" id="time" />
-
-  <button id="add-btn">Add Reminder</button>
-
-  <ul id="reminder-list"></ul>
+  <div id="reminderList"></div>
 
   <script>
-    const addBtn = document.getElementById('add-btn');
-    const medInput = document.getElementById('medication');
-    const timeInput = document.getElementById('time');
-    const reminderList = document.getElementById('reminder-list');
+    const reminderList = document.getElementById("reminderList");
 
-    function formatTime(timeStr) {
-      if (!timeStr) return '';
-      const [hourStr, minute] = timeStr.split(':');
-      let hour = parseInt(hourStr, 10);
-      const ampm = hour >= 12 ? 'PM' : 'AM';
-      hour = hour % 12 || 12;
-      return `${hour}:${minute} ${ampm}`;
-    }
+    // Load saved reminders from localStorage
+    window.onload = function () {
+      const savedReminders = JSON.parse(localStorage.getItem("reminders")) || [];
+      savedReminders.forEach(reminder => displayReminder(reminder));
+    };
 
     function addReminder() {
-      const medication = medInput.value.trim();
-      const time = timeInput.value;
+      const name = document.getElementById("medName").value;
+      const time = document.getElementById("medTime").value;
 
-      if (!medication) {
-        alert('Please enter a medication name.');
-        medInput.focus();
-        return;
-      }
-      if (!time) {
-        alert('Please select a time.');
-        timeInput.focus();
+      if (!name || !time) {
+        alert("Please enter both medication name and time.");
         return;
       }
 
-      const li = document.createElement('li');
-      li.innerHTML = `<span class="pill-emoji">💊</span> ${medication} at ${formatTime(time)}`;
-      reminderList.appendChild(li);
+      const reminder = { name, time };
+      displayReminder(reminder);
+      saveReminder(reminder);
 
-      medInput.value = '';
-      timeInput.value = '';
-      medInput.focus();
+      // Clear input fields
+      document.getElementById("medName").value = "";
+      document.getElementById("medTime").value = "";
     }
 
-    addBtn.addEventListener('click', addReminder);
+    function displayReminder({ name, time }) {
+      const [hour, minute] = time.split(":");
+      const formattedTime = formatAMPM(hour, minute);
+      const item = document.createElement("p");
+      item.textContent = `💊 ${name} at ${formattedTime}`;
+      reminderList.appendChild(item);
+    }
 
-    // Optional: Add enter key support for medication input
-    medInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        addReminder();
-      }
-    });
+    function saveReminder(reminder) {
+      const reminders = JSON.parse(localStorage.getItem("reminders")) || [];
+      reminders.push(reminder);
+      localStorage.setItem("reminders", JSON.stringify(reminders));
+    }
 
-    timeInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        addReminder();
-      }
-    });
+    function formatAMPM(hour, minute) {
+      let h = parseInt(hour);
+      const ampm = h >= 12 ? "PM" : "AM";
+      h = h % 12 || 12;
+      return `${h}:${minute} ${ampm}`;
+    }
   </script>
 </body>
 </html>
