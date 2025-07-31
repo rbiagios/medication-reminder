@@ -1,12 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Medication Reminder</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    h1 {
+      color: #2c3e50;
+    }
+    input, button {
+      padding: 10px;
+      margin: 5px 0;
+      font-size: 16px;
+    }
+    .reminder {
+      margin-top: 20px;
+    }
+  </style>
 </head>
 <body>
-  <h1>Welcome to Your Medication Reminder</h1>
-  <p>This will help elderly users remember their medications in a friendly, non-annoying way.</p>
+  <h1>Medication Reminder</h1>
+  <label for="medication">Medication Name:</label><br>
+  <input type="text" id="medication" placeholder="e.g. Aspirin"><br>
+
+  <label for="time">Reminder Time:</label><br>
+  <input type="time" id="time"><br>
+
+  <button onclick="addReminder()">Add Reminder</button>
+
+  <div class="reminder" id="remindersList">
+    <h3>Reminders:</h3>
+    <ul id="reminderItems"></ul>
+  </div>
+
+  <script>
+    function addReminder() {
+      const med = document.getElementById('medication').value;
+      const time = document.getElementById('time').value;
+
+      if (!med || !time) {
+        alert("Please enter both medication and time.");
+        return;
+      }
+
+      const li = document.createElement('li');
+      li.textContent = `${med} at ${time}`;
+      document.getElementById('reminderItems').appendChild(li);
+
+      // Save reminder to localStorage
+      const reminders = JSON.parse(localStorage.getItem('reminders') || '[]');
+      reminders.push({ med, time });
+      localStorage.setItem('reminders', JSON.stringify(reminders));
+    }
+
+    // Load reminders from localStorage on page load
+    window.onload = () => {
+      const reminders = JSON.parse(localStorage.getItem('reminders') || '[]');
+      for (const r of reminders) {
+        const li = document.createElement('li');
+        li.textContent = `${r.med} at ${r.time}`;
+        document.getElementById('reminderItems').appendChild(li);
+      }
+    };
+  </script>
 </body>
 </html>
