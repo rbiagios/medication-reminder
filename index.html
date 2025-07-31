@@ -4,6 +4,31 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Medication Reminder</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: white;
+    color: black;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  body.dark-mode {
+    background-color: #121212;
+    color: #f1f1f1;
+  }
+
+  button {
+    margin-left: 10px;
+    cursor: pointer;
+  }
+
+  button#toggleTheme {
+    margin-bottom: 20px;
+  }
+</style>
+
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -22,8 +47,12 @@
       padding-left: 10px;
     }
   </style>
+
 </head>
-<body>
+
+<button id="toggleTheme">🌙 Toggle Dark Mode</button>
+
+<body id="appBody">
   <h2>Add Medication Reminder</h2>
 <input type="text" id="medicationName" placeholder="Medication Name">
 <input type="time" id="medicationTime">
@@ -96,6 +125,30 @@
   }
 
   renderReminders();
+
+ const toggleThemeBtn = document.getElementById("toggleTheme");
+  const appBody = document.getElementById("appBody");
+
+  function applyTheme(theme) {
+    if (theme === "dark") {
+      appBody.classList.add("dark-mode");
+    } else {
+      appBody.classList.remove("dark-mode");
+    }
+  }
+
+  // Load saved theme
+  const savedTheme = localStorage.getItem("theme") || "light";
+  applyTheme(savedTheme);
+
+  // Toggle button
+  toggleThemeBtn.addEventListener("click", () => {
+    const current = appBody.classList.contains("dark-mode") ? "dark" : "light";
+    const newTheme = current === "dark" ? "light" : "dark";
+    applyTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+  });
+
 </script>
 
 </body>
