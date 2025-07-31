@@ -9,6 +9,7 @@
   body {
     font-family: Arial, sans-serif;
     margin: 20px;
+    padding: 20px;
     background-color: white;
     color: black;
     transition: background-color 0.3s, color 0.3s;
@@ -19,6 +20,15 @@
     color: #f1f1f1;
   }
 
+  h1 {
+    text-align: center;
+  }
+
+  input, button {
+    padding: 10px;
+    margin: 5px;
+  }
+
   button {
     margin-left: 10px;
     cursor: pointer;
@@ -27,32 +37,17 @@
   button#toggleTheme {
     margin-bottom: 20px;
   }
-</style>
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      background-color: #f4f4f4;
-    }
-    h1 {
-      text-align: center;
-    }
-    input, button {
-      padding: 10px;
-      margin: 5px;
-    }
-    #reminderList {
-      margin-top: 20px;
-      padding-left: 10px;
-    }
-  </style>
+  #reminderList {
+    margin-top: 20px;
+    padding-left: 10px;
+  }
+</style>
 
 </head>
 
-<button id="toggleTheme">🌙 Toggle Dark Mode</button>
-
 <body id="appBody">
+  <button id="toggleTheme">🌙 Toggle Dark Mode</button>
   <h2>Add Medication Reminder</h2>
 <input type="text" id="medicationName" placeholder="Medication Name">
 <input type="time" id="medicationTime">
@@ -60,8 +55,6 @@
 
 <h2>Your Reminders</h2>
 <ul id="reminderList"></ul>
-
-  <div id="reminderList"></div>
 
   <script>
   const medNameInput = document.getElementById("medicationName");
