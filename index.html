@@ -3,69 +3,65 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Medication Reminder</title>
+  <title>Medication Reminder App</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       padding: 20px;
+      background-color: #f8f9fa;
     }
     h1 {
       color: #2c3e50;
     }
-    input, button {
-      padding: 10px;
-      margin: 5px 0;
-      font-size: 16px;
+    label, input, button {
+      display: block;
+      margin: 10px 0;
+    }
+    #reminders {
+      margin-top: 20px;
     }
     .reminder {
-      margin-top: 20px;
+      background: #d1ecf1;
+      padding: 10px;
+      margin: 5px 0;
+      border-left: 5px solid #0c5460;
     }
   </style>
 </head>
 <body>
   <h1>Medication Reminder</h1>
-  <label for="medication">Medication Name:</label><br>
-  <input type="text" id="medication" placeholder="e.g. Aspirin"><br>
 
-  <label for="time">Reminder Time:</label><br>
-  <input type="time" id="time"><br>
+  <label for="medName">Medication Name:</label>
+  <input type="text" id="medName" placeholder="e.g., Lipitor" />
+
+  <label for="medTime">Reminder Time:</label>
+  <input type="time" id="medTime" />
 
   <button onclick="addReminder()">Add Reminder</button>
 
-  <div class="reminder" id="remindersList">
-    <h3>Reminders:</h3>
-    <ul id="reminderItems"></ul>
+  <div id="reminders">
+    <h2>Scheduled Reminders</h2>
   </div>
 
   <script>
     function addReminder() {
-      const med = document.getElementById('medication').value;
-      const time = document.getElementById('time').value;
+      const name = document.getElementById("medName").value;
+      const time = document.getElementById("medTime").value;
 
-      if (!med || !time) {
-        alert("Please enter both medication and time.");
+      if (!name || !time) {
+        alert("Please enter both the medication name and time.");
         return;
       }
 
-      const li = document.createElement('li');
-      li.textContent = `${med} at ${time}`;
-      document.getElementById('reminderItems').appendChild(li);
+      const reminderDiv = document.createElement("div");
+      reminderDiv.className = "reminder";
+      reminderDiv.innerText = `${name} at ${time}`;
+      document.getElementById("reminders").appendChild(reminderDiv);
 
-      // Save reminder to localStorage
-      const reminders = JSON.parse(localStorage.getItem('reminders') || '[]');
-      reminders.push({ med, time });
-      localStorage.setItem('reminders', JSON.stringify(reminders));
+      // Clear inputs
+      document.getElementById("medName").value = "";
+      document.getElementById("medTime").value = "";
     }
-
-    // Load reminders from localStorage on page load
-    window.onload = () => {
-      const reminders = JSON.parse(localStorage.getItem('reminders') || '[]');
-      for (const r of reminders) {
-        const li = document.createElement('li');
-        li.textContent = `${r.med} at ${r.time}`;
-        document.getElementById('reminderItems').appendChild(li);
-      }
-    };
   </script>
 </body>
 </html>
