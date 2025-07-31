@@ -24,62 +24,79 @@
   </style>
 </head>
 <body>
-  <h1>💊 Medication Reminder</h1>
-  <label for="medName">Medication Name:</label>
-  <input type="text" id="medName" placeholder="e.g., Aspirin" />
-  <label for="medTime">Time:</label>
-  <input type="time" id="medTime" />
-  <button onclick="addReminder()">Add Reminder</button>
+  <h2>Add Medication Reminder</h2>
+<input type="text" id="medicationName" placeholder="Medication Name">
+<input type="time" id="medicationTime">
+<button onclick="addReminder()">Add Reminder</button>
+
+<h2>Your Reminders</h2>
+<ul id="reminderList"></ul>
 
   <div id="reminderList"></div>
 
   <script>
-    const reminderList = document.getElementById("reminderList");
+  const medNameInput = document.getElementById("medicationName");
+  const medTimeInput = document.getElementById("medicationTime");
+  const reminderList = document.getElementById("reminderList");
 
-    // Load saved reminders from localStorage
-    window.onload = function () {
-      const savedReminders = JSON.parse(localStorage.getItem("reminders")) || [];
-      savedReminders.forEach(reminder => displayReminder(reminder));
-    };
+  let reminders = JSON.parse(localStorage.getItem("reminders")) || [];
 
-    function addReminder() {
-      const name = document.getElementById("medName").value;
-      const time = document.getElementById("medTime").value;
+  function saveReminders() {
+    localStorage.setItem("reminders", JSON.stringify(reminders));
+  }
 
-      if (!name || !time) {
-        alert("Please enter both medication name and time.");
-        return;
-      }
+  function renderReminders() {
+    reminderList.innerHTML = "";
+    reminders.forEach((reminder, index) => {
+      const li = document.createElement("li");
+      li.innerHTML = `💊 <strong>${reminder.name}</strong> at ${formatTime(reminder.time)}
+        <button onclick="editReminder(${index})">📝 Edit</button>
+        <button onclick="deleteReminder(${index})">❌ Delete</button>`;
+      reminderList.appendChild(li);
+    });
+  }
 
-      const reminder = { name, time };
-      displayReminder(reminder);
-      saveReminder(reminder);
+  function addReminder() {
+    const name = medNameInput.value.trim();
+    const time = medTimeInput.value;
+    if (!name || !time) return;
 
-      // Clear input fields
-      document.getElementById("medName").value = "";
-      document.getElementById("medTime").value = "";
+    reminders.push({ name, time });
+    saveReminders();
+    renderReminders();
+
+    medNameInput.value = "";
+    medTimeInput.value = "";
+  }
+
+  function deleteReminder(index) {
+    reminders.splice(index, 1);
+    saveReminders();
+    renderReminders();
+  }
+
+  function editReminder(index) {
+    const reminder = reminders[index];
+    const newName = prompt("Edit medication name:", reminder.name);
+    const newTime = prompt("Edit time (HH:MM):", reminder.time);
+
+    if (newName && newTime) {
+      reminders[index] = { name: newName, time: newTime };
+      saveReminders();
+      renderReminders();
     }
+  }
 
-    function displayReminder({ name, time }) {
-      const [hour, minute] = time.split(":");
-      const formattedTime = formatAMPM(hour, minute);
-      const item = document.createElement("p");
-      item.textContent = `💊 ${name} at ${formattedTime}`;
-      reminderList.appendChild(item);
-    }
+  function formatTime(timeStr) {
+    const [hour, minute] = timeStr.split(":");
+    const h = parseInt(hour);
+    const ampm = h >= 12 ? "PM" : "AM";
+    const hour12 = h % 12 === 0 ? 12 : h % 12;
+    return `${hour12}:${minute} ${ampm}`;
+  }
 
-    function saveReminder(reminder) {
-      const reminders = JSON.parse(localStorage.getItem("reminders")) || [];
-      reminders.push(reminder);
-      localStorage.setItem("reminders", JSON.stringify(reminders));
-    }
+  renderReminders();
+</script>
 
-    function formatAMPM(hour, minute) {
-      let h = parseInt(hour);
-      const ampm = h >= 12 ? "PM" : "AM";
-      h = h % 12 || 12;
-      return `${h}:${minute} ${ampm}`;
-    }
-  </script>
 </body>
 </html>
