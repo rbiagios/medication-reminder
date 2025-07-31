@@ -43,25 +43,36 @@
     <h2>Scheduled Reminders</h2>
   </div>
 
-  <script>
-    function addReminder() {
-      const name = document.getElementById("medName").value;
-      const time = document.getElementById("medTime").value;
+<script>
+  const form = document.getElementById("reminder-form");
+  const remindersDiv = document.getElementById("reminders");
 
-      if (!name || !time) {
-        alert("Please enter both the medication name and time.");
-        return;
-      }
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
 
-      const reminderDiv = document.createElement("div");
-      reminderDiv.className = "reminder";
-      reminderDiv.innerText = `${name} at ${time}`;
-      document.getElementById("reminders").appendChild(reminderDiv);
+    const medName = document.getElementById("med-name").value.trim();
+    const medTime = document.getElementById("med-time").value;
 
-      // Clear inputs
-      document.getElementById("medName").value = "";
-      document.getElementById("medTime").value = "";
+    if (!medName || !medTime) {
+      alert("Please enter both medication name and time.");
+      return;
     }
-  </script>
+
+    const [hour, minute] = medTime.split(":").map(Number);
+    const ampm = hour >= 12 ? "PM" : "AM";
+    const formattedHour = hour % 12 || 12;
+    const formattedTime = `${formattedHour.toString().padStart(2, "0")}:${minute
+      .toString()
+      .padStart(2, "0")} ${ampm}`;
+
+    const reminder = document.createElement("div");
+    reminder.className = "reminder";
+    reminder.textContent = `💊 ${medName} at ${formattedTime}`;
+
+    remindersDiv.appendChild(reminder);
+
+    form.reset();
+  });
+</script>
 </body>
 </html>
