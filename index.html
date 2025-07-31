@@ -142,6 +142,18 @@
     localStorage.setItem("theme", newTheme);
   });
 
+// Check reminders every minute
+setInterval(() => {
+  const now = new Date();
+  const currentTime = now.toTimeString().slice(0, 5); // Format: "HH:MM"
+
+  reminders.forEach(reminder => {
+    if (reminder.time === currentTime) {
+      alert(`⏰ Time to take your medication: ${reminder.name}`);
+    }
+  });
+}, 60000); // Check every 60,000 ms = 1 minute
+
 </script>
 
 </body>
