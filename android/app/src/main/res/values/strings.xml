@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">MedicationReminder</string>
+    <string name="title_activity_main">MedicationReminder</string>
+    <string name="package_name">com.rudy.medicationreminder</string>
+    <string name="custom_url_scheme">com.rudy.medicationreminder</string>
+</resources>
