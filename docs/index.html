@@ -1,93 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Medication Reminder (Demo)</title>
-  
-  <!-- PWA Manifest -->
-  <!-- PWA Manifest -->
-  <link rel="manifest" href="manifest.json">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medication Reminder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      padding: 20px;
-      background-color: white;
-      color: black;
-    }
-    .disclaimer {
-      background: #ffdddd;
-      border: 1px solid red;
-      padding: 10px;
-      margin-bottom: 20px;
-      font-size: 0.9em;
-      color: #800000;
-    }
-  </style>
-  <!-- App Icons -->
-  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+        h1 {
+            text-align: center;
+        }
 
-  <!-- For Apple devices (optional but recommended) -->
-  <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
-  <link rel="apple-touch-icon" sizes="512x512" href="icons/icon-512.png">
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        input, button {
+            padding: 10px;
+            margin-top: 5px;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        button {
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            margin-top: 10px;
+        }
+
+        #remindersList {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        #remindersList li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 10px; /* space between each item */
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+
+        .edit-btn, .delete-btn {
+            margin-left: 5px;
+            padding: 5px 8px;
+            font-size: 14px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .edit-btn {
+            background-color: #ffecb3;
+        }
+
+        .delete-btn {
+            background-color: #ffcdd2;
+        }
+    </style>
 </head>
 <body>
-  <!-- Disclaimer -->
-  <div class="disclaimer">
-    ⚠️ <strong>Demo Only:</strong> This app is for demonstration purposes only and not for actual medical use. 
-    Do not rely on it for real medication reminders.
-  </div>
+    <h1>Medication Reminder</h1>
 
-  <h1>Medication Reminder (Demo)</h1>
+    <label for="medName">Medication Name:</label>
+    <input type="text" id="medName" placeholder="Enter medication name">
 
-  <label>Medication Name:</label>
-  <input type="text" id="medName" placeholder="Enter medication name"><br><br>
+    <label for="medTime">Time (HH:MM):</label>
+    <input type="time" id="medTime">
 
-  <label>Time:</label>
-  <input type="time" id="medTime"><br><br>
+    <button id="addMedBtn">Add Reminder</button>
 
-  <button id="addBtn">Add Reminder</button>
+    <ul id="remindersList"></ul>
 
-  <h2>Reminders:</h2>
-  <ul id="reminderList"></ul>
+    <script>
+        const medNameInput = document.getElementById('medName');
+        const medTimeInput = document.getElementById('medTime');
+        const addMedBtn = document.getElementById('addMedBtn');
+        const remindersList = document.getElementById('remindersList');
 
-  <script>
-    // Load saved reminders from localStorage
-    const reminderList = document.getElementById("reminderList");
-    const reminders = JSON.parse(localStorage.getItem("reminders_demo")) || [];
+        let reminders = JSON.parse(localStorage.getItem('reminders')) || [];
 
-    function renderReminders() {
-      reminderList.innerHTML = "";
-      reminders.forEach((reminder, index) => {
-        const li = document.createElement("li");
-        li.textContent = `${reminder.name} at ${reminder.time}`;
-        reminderList.appendChild(li);
-      });
-    }
+        function displayReminders() {
+            remindersList.innerHTML = '';
+            reminders.forEach((reminder, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span>💊 ${reminder.name} at ${reminder.time}</span>
+                    <span>
+                        <button class="edit-btn" onclick="editReminder(${index})">✏️</button>
+                        <button class="delete-btn" onclick="deleteReminder(${index})">🗑️</button>
+                    </span>
+                `;
+                remindersList.appendChild(li);
+            });
+        }
 
-    document.getElementById("addBtn").addEventListener("click", () => {
-      const name = document.getElementById("medName").value.trim();
-      const time = document.getElementById("medTime").value;
-      if (!name || !time) return;
-      reminders.push({ name, time });
-      localStorage.setItem("reminders_demo", JSON.stringify(reminders));
-      renderReminders();
-      document.getElementById("medName").value = "";
-      document.getElementById("medTime").value = "";
-    });
+        function deleteReminder(index) {
+            reminders.splice(index, 1);
+            localStorage.setItem('reminders', JSON.stringify(reminders));
+            displayReminders();
+        }
 
-    renderReminders();
+        function editReminder(index) {
+            const newName = prompt("Edit medication name:", reminders[index].name);
+            const newTime = prompt("Edit medication time (HH:MM):", reminders[index].time);
+            if (newName && newTime) {
+                reminders[index] = { name: newName, time: newTime };
+                localStorage.setItem('reminders', JSON.stringify(reminders));
+                displayReminders();
+            }
+        }
 
-    // Register service worker for PWA
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("service-worker.js")
-        .then(() => console.log("Service Worker Registered"))
-        .catch(err => console.error("SW registration failed:", err));
-    }
-  </script>
-  <!-- Trigger Vercel deployment -->
+        addMedBtn.addEventListener('click', () => {
+            const name = medNameInput.value.trim();
+            const time = medTimeInput.value;
+            if (name && time) {
+                reminders.push({ name, time });
+                localStorage.setItem('reminders', JSON.stringify(reminders));
+                displayReminders();
+                medNameInput.value = '';
+                medTimeInput.value = '';
+            }
+        });
+
+        displayReminders();
+    </script>
 </body>
 </html>
