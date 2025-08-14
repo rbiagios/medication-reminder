@@ -56,8 +56,8 @@
 
         ul#remindersList li {
             background: #fff;
-            margin-bottom: 12px;
-            padding: 10px;
+            margin-bottom: 15px;
+            padding: 12px 15px;
             border-radius: 8px;
             display: flex;
             justify-content: space-between;
@@ -107,7 +107,65 @@
     </script>
 
     <!-- Main App Script -->
-    <script src="script.js?v=2"></script>
+    <script>
+        const medNameInput = document.getElementById('medName');
+        const medTimeInput = document.getElementById('medTime');
+        const addMedBtn = document.getElementById('addMedBtn');
+        const remindersList = document.getElementById('remindersList');
+
+        let reminders = JSON.parse(localStorage.getItem('reminders')) || [];
+
+        function displayReminders() {
+            remindersList.innerHTML = '';
+            reminders.forEach((reminder, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span>💊 ${reminder.name} at ${reminder.time}</span>
+                    <span>
+                        <button class="edit-btn" onclick="editReminder(${index})">✏️</button>
+                        <button class="delete-btn" onclick="deleteReminder(${index})">🗑️</button>
+                    </span>
+                `;
+                remindersList.appendChild(li);
+            });
+        }
+
+        addMedBtn.addEventListener('click', () => {
+            const name = medNameInput.value.trim();
+            const time = medTimeInput.value;
+            if (name === '' || time === '') {
+                alert('Please enter both medication name and time.');
+                return;
+            }
+            reminders.push({ name, time });
+            localStorage.setItem('reminders', JSON.stringify(reminders));
+            medNameInput.value = '';
+            medTimeInput.value = '';
+            displayReminders();
+        });
+
+        function editReminder(index) {
+            const reminder = reminders[index];
+            const newName = prompt('Edit medication name:', reminder.name);
+            const newTime = prompt('Edit time (HH:MM):', reminder.time);
+            if (newName && newTime) {
+                reminders[index] = { name: newName, time: newTime };
+                localStorage.setItem('reminders', JSON.stringify(reminders));
+                displayReminders();
+            }
+        }
+
+        function deleteReminder(index) {
+            if (confirm('Are you sure you want to delete this reminder?')) {
+                reminders.splice(index, 1);
+                localStorage.setItem('reminders', JSON.stringify(reminders));
+                displayReminders();
+            }
+        }
+
+        // Initial display
+        displayReminders();
+    </script>
 
 </body>
 </html>
