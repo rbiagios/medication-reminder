@@ -7,137 +7,107 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
             padding: 20px;
             background-color: #f4f4f4;
         }
 
+        /* Banner styling */
+        .banner {
+            background-color: #ffcccc;
+            padding: 10px;
+            text-align: center;
+            border-bottom: 2px solid red;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .banner h2 {
+            margin: 0;
+            color: red;
+        }
+
+        .banner p {
+            margin: 5px 0;
+        }
+
         h1 {
             text-align: center;
+            margin-bottom: 20px;
         }
 
-        label {
-            display: block;
-            margin-top: 10px;
-            font-weight: bold;
-        }
-
-        input, button {
-            padding: 10px;
-            margin-top: 5px;
-            width: 100%;
-            box-sizing: border-box;
+        label, input, button {
             font-size: 16px;
         }
 
+        input {
+            padding: 5px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
         button {
-            cursor: pointer;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            margin-top: 10px;
+            padding: 5px 10px;
         }
 
-        #remindersList {
-            list-style: none;
+        ul#remindersList {
+            list-style-type: none;
             padding: 0;
-            margin-top: 20px;
         }
 
-        #remindersList li {
+        ul#remindersList li {
+            background: #fff;
+            margin-bottom: 12px;
+            padding: 10px;
+            border-radius: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px;
-            margin-bottom: 10px; /* space between each item */
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            background-color: #f9f9f9;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
         .edit-btn, .delete-btn {
             margin-left: 5px;
-            padding: 5px 8px;
-            font-size: 14px;
-            border: none;
-            border-radius: 4px;
             cursor: pointer;
-        }
-
-        .edit-btn {
-            background-color: #ffecb3;
-        }
-
-        .delete-btn {
-            background-color: #ffcdd2;
+            background-color: #eee;
+            border: none;
+            border-radius: 5px;
+            padding: 3px 6px;
         }
     </style>
 </head>
 <body>
-    <h1>Medication Reminder</h1>
 
+    <!-- Banner -->
+    <div class="banner">
+        <h2>⚠️ Disclaimer</h2>
+        <p>This app is not a reliable tool for reminding about medications. Always follow your healthcare provider's instructions.</p>
+    </div>
+
+    <!-- Page Title -->
+    <h1>Medication Reminder (Demo)</h1>
+
+    <!-- App Inputs -->
     <label for="medName">Medication Name:</label>
     <input type="text" id="medName" placeholder="Enter medication name">
-
-    <label for="medTime">Time (HH:MM):</label>
+    <label for="medTime">Time:</label>
     <input type="time" id="medTime">
-
     <button id="addMedBtn">Add Reminder</button>
 
     <ul id="remindersList"></ul>
 
-    <script src="script.js?v=2">
-        const medNameInput = document.getElementById('medName');
-        const medTimeInput = document.getElementById('medTime');
-        const addMedBtn = document.getElementById('addMedBtn');
-        const remindersList = document.getElementById('remindersList');
-
-        let reminders = JSON.parse(localStorage.getItem('reminders')) || [];
-
-        function displayReminders() {
-            remindersList.innerHTML = '';
-            reminders.forEach((reminder, index) => {
-                const li = document.createElement('li');
-                li.innerHTML = `
-                    <span>💊 ${reminder.name} at ${reminder.time}</span>
-                    <span>
-                        <button class="edit-btn" onclick="editReminder(${index})">✏️</button>
-                        <button class="delete-btn" onclick="deleteReminder(${index})">🗑️</button>
-                    </span>
-                `;
-                remindersList.appendChild(li);
-            });
-        }
-
-        function deleteReminder(index) {
-            reminders.splice(index, 1);
-            localStorage.setItem('reminders', JSON.stringify(reminders));
-            displayReminders();
-        }
-
-        function editReminder(index) {
-            const newName = prompt("Edit medication name:", reminders[index].name);
-            const newTime = prompt("Edit medication time (HH:MM):", reminders[index].time);
-            if (newName && newTime) {
-                reminders[index] = { name: newName, time: newTime };
-                localStorage.setItem('reminders', JSON.stringify(reminders));
-                displayReminders();
-            }
-        }
-
-        addMedBtn.addEventListener('click', () => {
-            const name = medNameInput.value.trim();
-            const time = medTimeInput.value;
-            if (name && time) {
-                reminders.push({ name, time });
-                localStorage.setItem('reminders', JSON.stringify(reminders));
-                displayReminders();
-                medNameInput.value = '';
-                medTimeInput.value = '';
-            }
+    <!-- Service Worker Unregister -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          for (let registration of registrations) {
+            registration.unregister();
+          }
         });
-
-        displayReminders();
+      }
     </script>
+
+    <!-- Main App Script -->
+    <script src="script.js?v=2"></script>
+
 </body>
 </html>
